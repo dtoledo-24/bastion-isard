@@ -2,10 +2,10 @@
 <html>
 <body>
 
-<h1>Sadly not My first PHP page</h1>
+<h1>Pagina de ejemplo :(</h1>
 
 <?php
-echo 'Hello World!';
+echo 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 ?>
 
 </body>

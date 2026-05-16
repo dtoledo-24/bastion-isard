@@ -1,4 +1,4 @@
-name: Deploy de la cosa del bastion
+name: Deploy de la cosa del bastion (Pero ahora bien, creo o espero vamos)
 
 on:
   push:
@@ -12,30 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install SSH key
+      - name: SSH deploy
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH
-        run: |
-          ssh -i ~/.ssh/id_ed25519 \
-              -p 443 \
-              -o StrictHostKeyChecking=no \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-              "cat > /tmp/index.php" < index.php
-
-      - name: Move into Apache folder
-        run: |
-          ssh -i ~/.ssh/id_ed25519 \
-              -p 443 \
-              -o StrictHostKeyChecking=no \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-              "sudo rm -f /var/www/html/index.html &&
-               sudo mv /tmp/index.php /var/www/html/index.php &&
-               sudo chown www-data:www-data /var/www/html/index.php &&
-               sudo chmod 644 /var/www/html/index.php"
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /var/www/html &&
+            sudo git pull origin main
+          "
